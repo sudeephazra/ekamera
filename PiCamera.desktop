@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=PiCamera
+Type=Application
+Terminal=false
+Categories=AudioVideo;
+Encoding=UTF-8
+Terminal=false
+StartupNotify=false
+Exec=/home/pi/Downloads/PiCamera-GUI/PiCamera_exec
+Icon=/home/pi/Downloads/PiCamera-GUI/images/camera.png
+
+

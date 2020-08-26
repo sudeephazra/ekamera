@@ -5,7 +5,7 @@
 
 from PiCameraGUI import PiCameraGUI
 from Exceptions_ModuleCamera import TkinterError, PiCameraError
-from tkinter import Tk, messagebox
+from tkinter import Tk, messagebox, PhotoImage
 from picamera import PiCamera
 
 # Exécute le programme
@@ -13,20 +13,21 @@ def run():
     try:
         win = Tk()
     except:
-        messagebox.showerror("Erreur Tkinter", "Erreur d'initialisation de l'interface graphique")
-        raise TkinterError("Erreur d'initialisation de Tkinter")
-        print("Terminé")
+        messagebox.showerror("Tkinter error", "GUI initialization error")
+        raise TkinterError("Tkinter initialization error")
+        print("Finished")
         return 0
     
     try:
         camera = PiCamera()  # Mode autre que 0 pour pouvoir changer de mode plus tard
         camera.sensor_mode = 0	# Retourne au mode 0
     except:
-        messagebox.showerror("Erreur PiCamera", "Erreur d'initialisation de la caméra\nElle est peut-être mal installée\nSi ça ne marche toujours pas,\nveuillez redémarrer le Rapsberry Pi")
-        raise PiCameraError("Erreur en créant l'instance de PiCamera")
-        print("Terminé")
+        messagebox.showerror("PiCamera error", "Camera initialization error\nIt may be badly installed\nIf it still doesn't work,\nplease restart the system")
+        raise PiCameraError("Error creating the PiCamera instance")
+        print("Finished")
         return 0
-
+    photo = PhotoImage(file = "../ekamera.png")
+    win.iconphoto(False, photo)
     win.resizable(width=False, height=False)
     app = PiCameraGUI(win,camera,title="PiCamera")
     win.mainloop()
@@ -35,5 +36,5 @@ def run():
         
 # Exécute le programme
 if __name__ == "__main__":
-    print("Initialisation de la fenêtre")
+    print("Window initialization")
     run()

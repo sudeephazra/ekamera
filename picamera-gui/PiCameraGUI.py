@@ -23,10 +23,9 @@ SIZE_OPTIONS = 400
 BD = 2
 
 # Répertoires
-CAPTURE_DIR = './Captures/'
-ASSETS_DIR = './Assets/'
-VIDEO_DIR = './Vidéo/'
-
+CAPTURE_DIR = '/home/pi/Pictures/'
+VIDEO_DIR = '/home/pi/Videos/'
+IMAGE_DIR = '/etc/eklavya/ekamera/images/'
 
 
 class PiCameraGUI(Frame):
@@ -79,7 +78,7 @@ class PiCameraGUI(Frame):
         self.resolution = RESOLUTION_CAMERA
         self.camera.resolution = self.resolution
         self.camera.framerate = 24
-        self.etatCapture = ["Prêt à la capture", ""]
+        self.etatCapture = ["Ready to capture", ""]
         self.dernierFichier = ""
         self.video_dir = VIDEO_DIR
         self.photo_dir = CAPTURE_DIR
@@ -102,7 +101,7 @@ class PiCameraGUI(Frame):
         self.i = 0
         self.format = 'png'
         self.nomFichier = 'capture'
-        self.champ = 'Complet'
+        self.champ = 'Done'
         self.angle = 0
         self.recording = False
 
@@ -141,7 +140,7 @@ class PiCameraGUI(Frame):
         self.sectionFrame.grid(row=0, column=1)
 
         # Crée la sous-fenêtre de l'aperçu
-        self.imageFrame = LabelFrame(self.sectionFrame, text = "Aperçu", width=IMAGE_WIDTH+5, height=IMAGE_HEIGHT+5,bd=BD)
+        self.imageFrame = LabelFrame(self.sectionFrame, text = "Preview", width=IMAGE_WIDTH+5, height=IMAGE_HEIGHT+5,bd=BD)
         self.imageFrame.grid(row=0, column=1)
         self.previewFrame = Frame(self.imageFrame, width=IMAGE_WIDTH, height=IMAGE_HEIGHT, bd=BD, bg='black')
         self.previewFrame.grid()
@@ -151,8 +150,9 @@ class PiCameraGUI(Frame):
                                           width=IMAGE_WIDTH+2, height=IMAGE_HEIGHT+2,bd=BD)
         self.captureFrame.grid(row=1, column=1)
         self.captureCanvas = Canvas(self.captureFrame, width=IMAGE_WIDTH, height=IMAGE_HEIGHT,bd=BD, cursor="tcross")
-        self.imagedefaut = PhotoImage(file=ASSETS_DIR+"default.png")
-        self.imagedefaut = self.imagedefaut.subsample(2)
+        self.imagedefaut = PhotoImage(file=IMAGE_DIR+"eklavya_default.png")
+        #self.imagedefaut = self.imagedefaut.zoom(1)
+        self.imagedefaut = self.imagedefaut.subsample(3)
         self.captureCanvas.create_image(0,0,image=self.imagedefaut, anchor='nw')
         self.captureCanvas.grid()
 
@@ -165,17 +165,17 @@ class PiCameraGUI(Frame):
         self.commandesFrame.grid(row=2, column=1)
 
         # Crée la sous-fenêtre des commandes
-        self.buttonsFrame = LabelFrame(self.commandesFrame, text = "Commandes", width=IMAGE_WIDTH/2, height=50, bd=BD)
+        self.buttonsFrame = LabelFrame(self.commandesFrame, text = "Commands", width=IMAGE_WIDTH/2, height=50, bd=BD)
         self.buttonsFrame.grid(row=2, column=1)
 
         bsize = self.get_cmdsize()
         # Crée la sous-fenêtre des options de la capture en séquence
-        self.optionseqFrame = LabelFrame(self.commandesFrame, text = "Séquence",width=bsize[0]-10, height=bsize[1], bd=BD)
+        self.optionseqFrame = LabelFrame(self.commandesFrame, text = "Sequence",width=bsize[0]-10, height=bsize[1], bd=BD)
         self.optionseqFrame.grid(row=2, column=0,sticky='w')
         self.optionseqFrame.grid_propagate(0)
 
         # Crée la sous-fenêtre de l'état de la capture
-        self.etatFrame = LabelFrame(self.commandesFrame, text = "État",width=bsize[0]+10, height=bsize[1], bd=BD)
+        self.etatFrame = LabelFrame(self.commandesFrame, text = "State",width=bsize[0]+10, height=bsize[1], bd=BD)
         self.etatFrame.grid(row=2, column=3,sticky='e')
         self.etatFrame.grid_propagate(0)
 
@@ -197,19 +197,19 @@ class PiCameraGUI(Frame):
         self.createImage()  # Initialise les widgets
 
         # Sous-fenêtre de l'option Résolution
-        self.resFrame = LabelFrame(self.optionsFrame, text = "Résolution", width = SIZE_OPTIONS, height = int(IMAGE_HEIGHT/div)+50-10, bd=BD)
+        self.resFrame = LabelFrame(self.optionsFrame, text = "Resolution", width = SIZE_OPTIONS, height = int(IMAGE_HEIGHT/div)+50-10, bd=BD)
         self.resFrame.grid(row=1)
         self.resFrame.grid_propagate(0)
         self.createRes()
 
         # Sous-fenêtre de l'option Texte
-        self.textFrame = LabelFrame(self.optionsFrame, text = "Texte", width = SIZE_OPTIONS, height = int(IMAGE_HEIGHT/div)-50-10, bd=BD)
+        self.textFrame = LabelFrame(self.optionsFrame, text = "Text", width = SIZE_OPTIONS, height = int(IMAGE_HEIGHT/div)-50-10, bd=BD)
         self.textFrame.grid(row=2)
         self.textFrame.grid_propagate(0)
         self.createText()
 
         # Sous-fenêtre de l'option Sauvegarder
-        self.saveFrame = LabelFrame(self.optionsFrame, text="Sauvegarde", width = SIZE_OPTIONS, height = int(IMAGE_HEIGHT/div)+10, bd=BD)
+        self.saveFrame = LabelFrame(self.optionsFrame, text="Save As", width = SIZE_OPTIONS, height = int(IMAGE_HEIGHT/div)+10, bd=BD)
         self.saveFrame.grid(row=3)
         self.saveFrame.grid_propagate(0)
         self.createSave()
@@ -227,30 +227,30 @@ class PiCameraGUI(Frame):
 
         # crée le menu Fichier et l'attache au menu virtuel
         menuFichier=Menu(self.menubar, tearoff=0)
-        self.menubar.add_cascade(label="Fichier", menu=menuFichier)
-        menuFichier.add_command(label="Répertoire photo", command=self.changerRepertoirePhoto)
-        menuFichier.add_command(label="Répertoire vidéo", command=self.changerRepertoireVideo)
-        menuFichier.add_command(label="Réinitialiser", command=self.reset_all)
-        menuFichier.add_command(label="Quitter", command=self.quit)
+        self.menubar.add_cascade(label="File", menu=menuFichier)
+        menuFichier.add_command(label="Photo Directory", command=self.changerRepertoirePhoto)
+        menuFichier.add_command(label="Video Directory", command=self.changerRepertoireVideo)
+        menuFichier.add_command(label="Reset", command=self.reset_all)
+        menuFichier.add_command(label="Exit", command=self.quit)
 
         # crée le menu Éditer et l'attache au menu virtuel
         menuEditer = Menu(self.menubar, tearoff=0)
-        self.menubar.add_cascade(label="Éditer", menu=menuEditer)
-        menuEditer.add_command(label="Revirement horizontal", command=self.hflip)
-        menuEditer.add_command(label="Revirement vertical", command=self.vflip)
+        self.menubar.add_cascade(label="Edit", menu=menuEditer)
+        menuEditer.add_command(label="Rotate horizontal", command=self.hflip)
+        menuEditer.add_command(label="Rotate vertical", command=self.vflip)
         menuEditer.add_command(label="Rotation", command=self.rotate)
 
         # crée le menu Capture et l'attache au menu virtuel
         menuCapture = Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="Capture", menu=menuCapture)
         menuCapture.add_command(label="Photo", command=self.capture)
-        menuCapture.add_command(label="Vidéo", command=self.recVideo)
-        menuCapture.add_command(label="Séquence", command=self.captureSeq)
+        menuCapture.add_command(label="Video", command=self.recVideo)
+        menuCapture.add_command(label="Sequence", command=self.captureSeq)
 
         # crée le menu Aide et l'attache au menu virtuel
-        menuAide = Menu(self.menubar, tearoff=0)
-        self.menubar.add_cascade(label="Aide", menu=menuAide)
-        menuAide.add_command(label="À propos", command=self.createAide)
+        # menuAide = Menu(self.menubar, tearoff=0)
+        # self.menubar.add_cascade(label="Aide", menu=menuAide)
+        # menuAide.add_command(label="À propos", command=self.createAide)
 
         # Affiche le menu
         self.master.config(menu=self.menubar)
@@ -276,7 +276,7 @@ class PiCameraGUI(Frame):
         self.deplacementFrame.grid(row=2,sticky='w')
 
         # Crée la glissoire du déplacement en X
-        Label(self.deplacementFrame, text='Déplacement').grid(row=0,columnspan=2,sticky='w')
+        Label(self.deplacementFrame, text='Move').grid(row=0,columnspan=2,sticky='w')
         Label(self.deplacementFrame, text='X').grid(row=1,column=0,sticky='s')
         self.xzoomScale = Scale(self.deplacementFrame, from_=0, to =100, orient="horizontal")
         self.xzoomScale.grid(row=1,column=1,sticky='w')
@@ -291,7 +291,7 @@ class PiCameraGUI(Frame):
         # Crée le bouton de réinitialisation du zoom
         self.resetFrame = Frame(self.zoom_Frame)
         self.resetFrame.grid(row=3, column=0)
-        self.resetButton = Button(self.resetFrame, text='Réinitialiser', command=self.reset_size)
+        self.resetButton = Button(self.resetFrame, text='Reset', command=self.reset_size)
         self.resetButton.grid()
 
         Label(self.image_Frame, text='      ').grid(row=0,column=1,sticky='w')
@@ -299,7 +299,7 @@ class PiCameraGUI(Frame):
         # Crée la section pour placer les options de l'exposition
         self.expFrame = Frame(self.image_Frame)
         self.expFrame.grid(row=0, column=2,sticky="n")
-        Label(self.expFrame, text='Exposition (Auto: 0)').grid(row=0,column=0,columnspan=2,sticky='nw')
+        Label(self.expFrame, text='Exposure (Auto: 0)').grid(row=0,column=0,columnspan=2,sticky='nw')
 
         # Crée la glissoire de l'ISO
         Label(self.expFrame, text='ISO', justify='left').grid(row=1,column=0,sticky='w')
@@ -316,7 +316,7 @@ class PiCameraGUI(Frame):
 
         # Liste des modes d'exposition
         self.list_exp = ["off", "auto", "night", "nightpreview", "blacklight", "spotlight", "sports", "snow", "beach", "very long", "fixedfps", "antishake", "fireworks"]
-        self.modeLabel = Label(self.expFrame, text="Modes\nd'exposition", justify='left')
+        self.modeLabel = Label(self.expFrame, text="Exposure Modes", justify='left')
         self.modeLabel.grid(row=4, column=0, sticky='nw')
 
         # Initialise la boîte des résolutions par défaut et assigne la barre de défilement à celle-ci
@@ -332,10 +332,10 @@ class PiCameraGUI(Frame):
         self.expListbox.activate(1)  # Active par défaut le mode "auto"
 
         # Crée le bouton confirmer la résolution par défaut
-        Button(self.expFrame, text="Confirmer", command=self.set_expmode).grid(row=5, columnspan=2, column=1)
+        Button(self.expFrame, text="Confirm", command=self.set_expmode).grid(row=5, columnspan=2, column=1)
 
         # Crée le tooltip qui s'affichera au dessus du texte "Modes d'exposition"
-        note = "Activer un mode d'exposition\nempêche la configuration manuelle\nde l'iso et du shutter speed"
+        note = "Activate an exposure mode\nprevent manual configuration\nISO and shutter speed"
         createToolTip(self.modeLabel, note)
 
 
@@ -353,12 +353,12 @@ class PiCameraGUI(Frame):
         scrollbar = Scrollbar(self.resdefFrame, orient="vertical")
 
         # Liste des résolutions par défaut: (WIDTH, HEIGHT, "ASPECT RATIO", CAMERA_MODE, "CHAMP DE VISION")
-        self.list_res = [(2592, 1944, "4:3", 2, "Complet"),
-                         (1920, 1080, "16:9", 1, "Partiel"),
-                         (1296, 974, "4:3", 4, "Complet"),
-                         (1296, 730, "16:9", 5, "Complet"),
-                         (640, 480, "4:3", 7, "Partiel")]
-        Label(self.resdefFrame, text='Résolutions par défaut').grid(row=0, column=0,sticky='w')
+        self.list_res = [(2592, 1944, "4:3", 2, "Full"),
+                         (1920, 1080, "16:9", 1, "Partial"),
+                         (1296, 974, "4:3", 4, "Full"),
+                         (1296, 730, "16:9", 5, "Full"),
+                         (640, 480, "4:3", 7, "Partial")]
+        Label(self.resdefFrame, text='Default resolutions').grid(row=0, column=0,sticky='w')
 
         # Initialise la boîte des résolutions par défaut et assigne la barre de défilement à celle-ci
         self.resListbox = Listbox(self.resdefFrame, height=3, width=22, yscrollcommand=scrollbar.set)
@@ -373,7 +373,7 @@ class PiCameraGUI(Frame):
         self.resListbox.activate(4)  # Active par défaut la résolution 1296x730
 
         # Crée le bouton confirmer la résolution par défaut
-        self.confirmdefButton = Button(self.resFrame, text="Confirmer", command=self.set_resdef)
+        self.confirmdefButton = Button(self.resFrame, text="Confirm", command=self.set_resdef)
         self.confirmdefButton.grid(row=1)
 
         # Variable de résolution personnalisée
@@ -384,11 +384,11 @@ class PiCameraGUI(Frame):
         self.tailleFrame.grid(row=2,sticky='w')
 
         # Crée la boîte d'entrée de l'utilisateur pour la largeur et la hauteur de l'image
-        Label(self.tailleFrame, text="Résolution personnalisée").grid(row=0, column=0, columnspan=2, sticky='w')
-        Label(self.tailleFrame, text="Largeur:").grid(row=1, column=0,sticky='w')
+        Label(self.tailleFrame, text="Personalized Resolution").grid(row=0, column=0, columnspan=2, sticky='w')
+        Label(self.tailleFrame, text="Width:").grid(row=1, column=0,sticky='w')
         self.largeurEntry = Entry(self.tailleFrame, textvariable=self.resPersoW, validate="focusout", validatecommand=self.verify_resW)
         self.largeurEntry.grid(row=1, column=1,sticky='w')
-        Label(self.tailleFrame, text="Hauteur:").grid(row=2, column=0,sticky='w')
+        Label(self.tailleFrame, text="Height:").grid(row=2, column=0,sticky='w')
         self.hauteurEntry = Entry(self.tailleFrame, textvariable=self.resPersoH, validate="focusout", validatecommand=self.verify_resH)
         self.hauteurEntry.grid(row=2, column=1,sticky='w')
 
@@ -397,15 +397,15 @@ class PiCameraGUI(Frame):
         createToolTip(self.tailleFrame, note)
 
         # Crée le bouton confirmer la résolution personnalisée
-        self.confirmButton = Button(self.resFrame, text="Confirmer", command=self.set_res)
+        self.confirmButton = Button(self.resFrame, text="Confirm", command=self.set_res)
         self.confirmButton.grid(row=3)
 
         # Crée l'emplacement de l'aperçu de la résolution actuelle et du champ de vision actuel
         self.resactuelleFrame = Frame(self.resFrame)
         self.resactuelleFrame.grid(row=4, sticky='w')
-        self.resactuelleLabel = Label(self.resactuelleFrame, text="Résolution actuelle: {}x{}".format(self.resolution[0], self.resolution[1]))
+        self.resactuelleLabel = Label(self.resactuelleFrame, text="Actual Resolution: {}x{}".format(self.resolution[0], self.resolution[1]))
         self.resactuelleLabel.grid(row=0)
-        self.champLabel = Label(self.resactuelleFrame, text='Champ de vision: Partiel')
+        self.champLabel = Label(self.resactuelleFrame, text='Field of view: Partial')
         self.champLabel.grid(row=1, sticky='w')
 
 
@@ -424,7 +424,7 @@ class PiCameraGUI(Frame):
 
         self.tempsFrame = Frame(self.textFrame)
         self.tempsFrame.grid(row=0,sticky='w')
-        Label(self.tempsFrame, text="Annoter le temps à la photo").grid(row=0,column=0)
+        Label(self.tempsFrame, text="Annotate the time to the photo").grid(row=0,column=0)
 
         # Crée le bouton qui contrôle si le temps s'affiche sur la photo
         self.tempsButton = Checkbutton(self.tempsFrame, variable=self.annoterTemps, command=self.set_overlayText)
@@ -440,14 +440,14 @@ class PiCameraGUI(Frame):
         Label(self.textFrame, text="  ").grid(row=1)
         self.persoFrame = Frame(self.textFrame)
         self.persoFrame.grid(row=2,sticky='w')
-        Label(self.persoFrame, text="Personnalisé:").grid(row=0, column=0, sticky='w')
+        Label(self.persoFrame, text="Customize :").grid(row=0, column=0, sticky='w')
 
         # Crée la boîte d'entrée de l'utilisateur pour le texte personnalisé à afficher
         self.textEntry = Entry(self.persoFrame, textvariable=self.textVar)
         self.textEntry.grid(row=0,column=1, sticky='w')
 
         # Crée un tooltip relié au label "Personnalisé"
-        note="N'accepte pas les caractères spéciaux"+"\n"+"(code ASCII inférieur à 128)"
+        note="N'does not accept special characters"+"\n"+"(ASCII code less than 128)"
         createToolTip(self.textEntry, note)
 
 
@@ -462,38 +462,38 @@ class PiCameraGUI(Frame):
 
         self.fichierFrame = Frame(self.saveFrame)
         self.fichierFrame.grid(row=0,sticky='w')
-        Label(self.fichierFrame, text='Format du fichier:').grid(row=0, column=0,sticky='w')
+        Label(self.fichierFrame, text='File format:').grid(row=0, column=0,sticky='w')
 
         # Crée la boîte déroulante du format de la photo à enregistrer
         self.formatSpinbox = Spinbox(self.fichierFrame, values=("png","jpg", "gif","bmp","rgb","rgba"), width=5)
         self.formatSpinbox.grid(row=0, column=1,sticky='w')
 
         # Crée un tooltip relié à la spinbox du format
-        note = "Le format des fichiers vidéo\nest .h264 ar défaut."
+        note = "The format of the video files\nis .h264 as default."
         createToolTip(self.formatSpinbox, note)
 
         # Crée la boîte d'entrée de l'utilisateur pour le nom du fichier
-        Label(self.fichierFrame, text='Nom du fichier:').grid(row=1, column=0,sticky='w')
+        Label(self.fichierFrame, text='File name:').grid(row=1, column=0,sticky='w')
         self.fichierEntry = Entry(self.fichierFrame, textvariable=self.fichierVar)
         self.fichierEntry.grid(row=1, column=1,sticky='w')
-        Button(self.saveFrame, text="Confirmer", command=self.update_nomFichier).grid(row=1)
+        Button(self.saveFrame, text="Confirm", command=self.update_nomFichier).grid(row=1)
 
         # Aperçu du nom de fichier photo
-        self.apercuFichierphoto = Label(self.saveFrame, text="Fichier photo: capture.png")
+        self.apercuFichierphoto = Label(self.saveFrame, text="Photo File: capture.png")
         self.apercuFichierphoto.grid(row=4, sticky='w')
 
         # Aperçu du nom de fichier vidéo
-        self.apercuFichiervideo = Label(self.saveFrame, text="Fichier vidéo: capture.h264")
+        self.apercuFichiervideo = Label(self.saveFrame, text="Video File: capture.h264")
         self.apercuFichiervideo.grid(row=5, sticky='w')
 
         Label(self.saveFrame, text='').grid(row=6,sticky='w')
 
         # Aperçu du répertoire photo
-        self.apercuRepertoirephoto = Label(self.saveFrame, text="Répertoire photo: " + self.photo_dir)
+        self.apercuRepertoirephoto = Label(self.saveFrame, text="Photo directory: " + self.photo_dir)
         self.apercuRepertoirephoto.grid(row=7, sticky='w')
 
         # Aperçu du répertoire vidéo
-        self.apercuRepertoirevideo = Label(self.saveFrame, text="Répertoire vidéo: " + self.video_dir)
+        self.apercuRepertoirevideo = Label(self.saveFrame, text="Video directory: " + self.video_dir)
         self.apercuRepertoirevideo.grid(row=8, sticky='w')
 
 
@@ -504,10 +504,10 @@ class PiCameraGUI(Frame):
 
 	"""
         self.aide = Tk()
-        self.aide.title("À propos")
+        self.aide.title("About")
         self.aideFrame = Frame(self.aide)
         self.aideFrame.grid()
-        Label(self.aideFrame, text="Réal Paquin\nJérémy Talbot-Pâquet\nUniversité Laval - 2018").grid()
+        Label(self.aideFrame, text="Réal Paquin\nJérémy Talbot-Pâquet\nUniversité Laval - 2018\n").grid()
         self.centrerAide()
 
 
@@ -525,7 +525,7 @@ class PiCameraGUI(Frame):
 	"""
         # Crée le bouton capture
         # Ajuste la taille de l'image du bouton capture
-        self.cameraPNG=PhotoImage(file=ASSETS_DIR+"camera.png")
+        self.cameraPNG=PhotoImage(file=IMAGE_DIR+"camera.png")
         self.cameraPNG=self.cameraPNG.subsample(7)
         self.photoButton = Button(self.buttonsFrame, image=self.cameraPNG,
                                     width="40",height="40",
@@ -534,9 +534,9 @@ class PiCameraGUI(Frame):
 
         # Crée le bouton capture séquence
         # Ajuste la taille de l'image du bouton capture séquence
-        self.seqPNG=PhotoImage(file=ASSETS_DIR+"seq.png")
-        self.seqPNG=self.seqPNG.zoom(5)
-        self.seqPNG=self.seqPNG.subsample(80)
+        self.seqPNG=PhotoImage(file=IMAGE_DIR+"burst-shot.png")
+        #self.seqPNG=self.seqPNG.zoom(10)
+        self.seqPNG=self.seqPNG.subsample(7)
         self.seqButton = Button(self.buttonsFrame, image=self.seqPNG,
                                     width="40",height="40",
             command=self.captureSeq)
@@ -544,9 +544,9 @@ class PiCameraGUI(Frame):
 
         # Crée le bouton capture séquence
         # Ajuste la taille de l'image du bouton capture séquence
-        self.videoPNG=PhotoImage(file=ASSETS_DIR+"video.png")
-        self.videoPNG=self.videoPNG.zoom(5)
-        self.videoPNG=self.videoPNG.subsample(80)
+        self.videoPNG=PhotoImage(file=IMAGE_DIR+"video.png")
+        #self.videoPNG=self.videoPNG.zoom(10)
+        self.videoPNG=self.videoPNG.subsample(7)
         self.videoButton = Button(self.buttonsFrame, image=self.videoPNG,
                                     width="40",height="40",
             command=self.recVideo)
@@ -564,8 +564,9 @@ class PiCameraGUI(Frame):
 
         # Crée le bouton de revirement horiztonal
         # Ajuste la taille de l'image du bouton de revirement horiztonal
-        self.hflipPNG=PhotoImage(file=ASSETS_DIR+"hflip.png")
-        self.hflipPNG=self.hflipPNG.subsample(5)
+        self.hflipPNG=PhotoImage(file=IMAGE_DIR+"horizontal-flip.png")
+        #self.hflipPNG=self.hflipPNG.zoom(10)
+        self.hflipPNG=self.hflipPNG.subsample(7)
         self.hflipButton = Button(self.buttonsFrame, image=self.hflipPNG,
                                      width="40", height="40",
                                      command=self.hflip)
@@ -573,8 +574,9 @@ class PiCameraGUI(Frame):
 
         # Crée le bouton de rotation
         # Ajuste la taille de l'image du bouton de rotation
-        self.rotatePNG=PhotoImage(file=ASSETS_DIR+"rotate.png")
-        self.rotatePNG=self.rotatePNG.subsample(40)
+        self.rotatePNG=PhotoImage(file=IMAGE_DIR+"rotate.png")
+        #self.rotatePNG=self.rotatePNG.zoom(10)
+        self.rotatePNG=self.rotatePNG.subsample(7)
         self.rotateButton = Button(self.buttonsFrame, image=self.rotatePNG,
                                     width="40", height="40",
             command=self.rotate)
@@ -582,8 +584,9 @@ class PiCameraGUI(Frame):
 
         # Crée le bouton de revirement vertical
         # Ajuste la taille de l'image du bouton de revirement vertical
-        self.vflipPNG=PhotoImage(file=ASSETS_DIR+"vflip.png")
-        self.vflipPNG=self.vflipPNG.subsample(5)
+        self.vflipPNG=PhotoImage(file=IMAGE_DIR+"vertical-flip.png")
+        #self.rotatePNG=self.rotatePNG.zoom(10)
+        self.vflipPNG=self.vflipPNG.subsample(7)
         self.vflipButton = Button(self.buttonsFrame, image=self.vflipPNG,
                                     width="40", height="40",
             command=self.vflip)
@@ -599,15 +602,15 @@ class PiCameraGUI(Frame):
 
         # Crée l'image "capture vidéo en cours"
         # Ajuste la taille de l'image "capture vidéo en cours"
-        self.recPNG=PhotoImage(file=ASSETS_DIR+"rec.png")
-        self.recPNG=self.recPNG.zoom(5)
-        self.recPNG=self.recPNG.subsample(80)
+        self.recPNG=PhotoImage(file=IMAGE_DIR+"record.png")
+        #self.recPNG=self.recPNG.zoom(10)
+        self.recPNG=self.recPNG.subsample(7)
 
         # Crée l'image "capture en cours"
         # Ajuste la taille de l'image "capture vidéo en cours"
-        self.waitPNG=PhotoImage(file=ASSETS_DIR+"wait.png")
-        self.waitPNG=self.waitPNG.zoom(5)
-        self.waitPNG=self.waitPNG.subsample(40)
+        self.waitPNG=PhotoImage(file=IMAGE_DIR+"wait.png")
+        #self.waitPNG=self.waitPNG.zoom(10)
+        self.waitPNG=self.waitPNG.subsample(7)
 
         # Crée le menu
         self.createMenu()
@@ -669,19 +672,19 @@ class PiCameraGUI(Frame):
         self.dernierFichier = self.photo_dir+self.nomFichier+"."+self.format
 
         # Change l'état
-        self.etatCapture = ["Capture en cours...", ""]
+        self.etatCapture = ["Capture in progress...", ""]
         self.update_etatVid()
 
         # Prend la photo et l'enregistre sous self.dernierFichier
         self.camera.capture(self.dernierFichier)
 
         # Affiche l'endroit où la photo a été sauvegardée
-        self.etatCapture = ["Photo sauvegardée sous", self.dernierFichier]
+        self.etatCapture = ["Photo saved as", self.dernierFichier]
         self.update_etatVid()
 
         # Efface l'image d'attente
         self.etatCanvas.delete(imWait)
-        self.etatCapture = ["Prêt à la capture", " "]
+        self.etatCapture = ["Ready to capture", " "]
         self.after(4000, self.update_etatVid)
 
         # Actualise l'aperçu de la photo prise
@@ -697,7 +700,7 @@ class PiCameraGUI(Frame):
 
         # Affiche une image d'attente dans le canvas prévu à cet endroit
         imWait = self.etatCanvas.create_image((4,4), image=self.waitPNG, anchor='n'+'w')
-        self.etatCapture = ["Capture en séquence", "en cours..."]
+        self.etatCapture = ["Capture in sequence", "In progress..."]
         self.update_etatVid()
 
         # Crée la liste des fichiers dans lesquels les photos seront enregistrées
@@ -710,12 +713,12 @@ class PiCameraGUI(Frame):
         self.dernierFichier=list_seq[-1]
 
         # Affiche sous quels fichiers les photos ont été prises
-        self.etatCapture = ["Séquence sauvée sous", CAPTURE_DIR+self.nomFichier+"(x)."+self.format]
+        self.etatCapture = ["Sequence saved as", CAPTURE_DIR+self.nomFichier+"(x)."+self.format]
         self.update_etatVid()
 
         # Efface l'image d'attente
         self.etatCanvas.delete(imWait)
-        self.etatCapture = ["Prêt à la capture", " "]
+        self.etatCapture = ["Ready to capture", " "]
         self.after(4000, self.update_etatVid)
         # Actualise l'aperçu de la photo prise
         self.update_capture()
@@ -737,9 +740,9 @@ class PiCameraGUI(Frame):
             self.etatCanvas.delete(self.imRec)
 
             # Actualise l'état
-            self.etatCapture = ["Vidéo sauvegardée sous", self.fichierVid]
+            self.etatCapture = ["Video saved as", self.fichierVid]
             self.update_etatVid()
-            self.etatCapture = ["Prêt à la capture", ""]
+            self.etatCapture = ["Ready to capture", ""]
             self.after(4000, self.update_etatVid)
 
         # Si il n'y a pas d'enregistrement en cours
@@ -756,7 +759,7 @@ class PiCameraGUI(Frame):
             self.camera.wait_recording()
 
             # Actualise l'état
-            self.etatCapture = ["Enregistrement vidéo", "en cours..."]
+            self.etatCapture = ["Video recording", "In progress..."]
             self.update_etatVid()
 
         # Change l'état
@@ -828,7 +831,7 @@ class PiCameraGUI(Frame):
         self.update_nomFichier()
         self.set_overlayText()
         self.resolution = RESOLUTION_CAMERA
-        self.champ = "Complet"
+        self.champ = "Done"
         self.camera.resolution = self.resolution
         self.update_resactuelle()
         self.nomFichier = "capture"
@@ -921,19 +924,19 @@ class PiCameraGUI(Frame):
 
         # Ouvre une boîte de dialogue et soulève une exception si aucune donnée n'est entrée dans une des deux boîtes d'entrée
         if self.resPersoW.get() == '' or self.resPersoH.get() == '':
-            messagebox.showinfo("Erreur résolution", "Entrez un nombre entier\nLa résolution devrait avoir le format (int, int)")
-            raise ValueError("La résolution devrait être composée de deux entiers")
+            messagebox.showinfo("Resolution Error", "Enter a whole number\nThe resolution should have the format (int, int)")
+            raise ValueError("The resolution should consist of two integers")
 
         # Ouvre une boîte de dialogue et soulève une exception si une des données est négative
         if int(self.resPersoW.get()) < 0 or int(self.resPersoH.get()) < 0:
-            messagebox.showinfo("Erreur résolution", "La résolution devrait être un nombre entier positif")
-            raise ValueError("La résolution devrait être un nombre entier positif")
+            messagebox.showinfo("Resolution Error", "The resolution should be a positive integer")
+            raise ValueError("The resolution should be a positive integer")
 
         # Ouvre une boîte de dialogue et soulève une exception si une des données est inférieure à 64
         # 64x64 est la résolution minimale de la caméra
         if int(self.resPersoW.get()) < 64 or int(self.resPersoH.get()) < 64:
-            messagebox.showinfo("Erreur résolution", "La résolution devrait être supérieure à 64x64")
-            raise ValueError("La résolution devrait être supérieure à 64x64")
+            messagebox.showinfo("Resolution Error", "Resolution should be greater than 64x64")
+            raise ValueError("Resolution should be greater than 64x64")
 
         # Assigne la résolution à la caméra et soulève une exception s'il y a échec
         self.resolution = (int(self.resPersoW.get()), int(self.resPersoH.get()))
@@ -941,19 +944,19 @@ class PiCameraGUI(Frame):
         try:
             self.camera.resolution = self.resolution
         except:
-            messagebox.showinfo("Erreur", "La résolution est trop grande\nChoisissez une résolution inférieure à 2592x1944")
-            raise PiCameraError("La résolution est trop grande")
+            messagebox.showinfo("Error", "The resolution is too high\nChoose a resolution lower than 2592x1944")
+            raise PiCameraError("The resolution is too high")
 
         # Ouvre une boîte de dialogue et soulève une exception si la résolution est supérieure à 2592x1944
         # 2592x1944 est la résolution maximale de la caméra sans problème de mémoire
         if self.resolution[0] > 2592 or self.resolution[1] > 1944:
             self.resolution = RESOLUTION_CAMERA
-            messagebox.showinfo("Erreur", "La résolution est trop grande\nChoisissez une résolution inférieure à 2592x1944")
+            messagebox.showinfo("Error", "The resolution is too high\nChoose a resolution lower than 2592x1944")
 
         # Assigne la résolution de la caméra à celle entrée par l'utilisateur
         self.camera.resolution = self.resolution
         self.camera.sensor_mode = 5
-        self.champ = "Complet"
+        self.champ = "Done"
 
         # Actualise l'aperçu de la résolution
         self.update_resactuelle()
@@ -1047,10 +1050,10 @@ class PiCameraGUI(Frame):
 
         self.format = self.formatSpinbox.get()
 
-        self.apercuFichierphoto.config(text="Fichier photo: " + self.nomFichier + "." + self.format)
-        self.apercuFichiervideo.config(text="Fichier vidéo: " + self.nomFichier + ".h264")
-        self.apercuRepertoirephoto.config(text="Répertoire photo: " + self.photo_dir)
-        self.apercuRepertoirevideo.config(text="Répertoire vidéo: " + self.video_dir)
+        self.apercuFichierphoto.config(text="Photo File : " + self.nomFichier + "." + self.format)
+        self.apercuFichiervideo.config(text="Video File: " + self.nomFichier + ".h264")
+        self.apercuRepertoirephoto.config(text="Photo Folder: " + self.photo_dir)
+        self.apercuRepertoirevideo.config(text="Video Folder: " + self.video_dir)
 
 
     def update_etatVid(self):
@@ -1089,8 +1092,8 @@ class PiCameraGUI(Frame):
 	Actualise l'affichage de la résolution et du champ de vision actuel
 
 	"""
-        self.resactuelleLabel.config(text="Résolution actuelle: {}x{}".format(self.resolution[0], self.resolution[1]))
-        self.champLabel.config(text="Champ de vision: {}".format(self.champ))
+        self.resactuelleLabel.config(text="Current resolution: {}x{}".format(self.resolution[0], self.resolution[1]))
+        self.champLabel.config(text="Field of view: {}".format(self.champ))
 
 
     """
@@ -1111,8 +1114,8 @@ class PiCameraGUI(Frame):
                 int(self.resPersoW.get())
         except:
             # Ouvre une boîte de dialogue et soulève une exception
-            messagebox.showinfo("Erreur", "Entrez un nombre entier")
-            raise ValueError("La résolution devrait être composée de deux entiers")
+            messagebox.showinfo("Error", "Enter a whole number")
+            raise ValueError("The resolution should consist of two integers")
 
 
     def verify_resH(self):
@@ -1128,8 +1131,8 @@ class PiCameraGUI(Frame):
                 int(self.resPersoH.get())
         except:
             # Ouvre une boîte de dialogue et soulève une exception
-            messagebox.showinfo("Erreur résolution", "Entrez un nombre entier")
-            raise ValueError("La résolution devrait être composée de deux entiers")
+            messagebox.showinfo("Resolution error", "Enter a whole number")
+            raise ValueError("The resolution should consist of two integers")
 
 
     def verify_text(self):
@@ -1206,7 +1209,7 @@ class PiCameraGUI(Frame):
 	* self.photo_dir: str
 
 	"""
-        self.photo_dir = filedialog.askdirectory(title = "Choisir un répertoire photo")+"/"
+        self.photo_dir = filedialog.askdirectory(title = "Choose a photo directory")+"/"
         self.update_nomFichier()
 
 
@@ -1220,5 +1223,5 @@ class PiCameraGUI(Frame):
 	* self.video_dir: str
 
 	"""
-        self.video_dir = filedialog.askdirectory(title = "Choisir un répertoire vidéo")+"/"
+        self.video_dir = filedialog.askdirectory(title = "Choose a video directory")+"/"
         self.update_nomFichier()
