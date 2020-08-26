@@ -248,9 +248,9 @@ class EKamera(Frame):
         menuCapture.add_command(label="Sequence", command=self.captureSeq)
 
         # crée le menu Aide et l'attache au menu virtuel
-        # menuAide = Menu(self.menubar, tearoff=0)
-        # self.menubar.add_cascade(label="Aide", menu=menuAide)
-        # menuAide.add_command(label="À propos", command=self.createAide)
+        menuAide = Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="Help", menu=menuAide)
+        menuAide.add_command(label="About", command=self.createAide)
 
         # Affiche le menu
         self.master.config(menu=self.menubar)
@@ -507,7 +507,7 @@ class EKamera(Frame):
         self.aide.title("About")
         self.aideFrame = Frame(self.aide)
         self.aideFrame.grid()
-        Label(self.aideFrame, text="Réal Paquin\nJérémy Talbot-Pâquet\nUniversité Laval - 2018\n").grid()
+        Label(self.aideFrame, text="Réal Paquin\nJérémy Talbot-Pâquet\nUniversité Laval - 2018\nSudeep Hazra 2020").grid()
         self.centrerAide()
 
 
