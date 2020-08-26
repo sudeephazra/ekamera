@@ -1,3 +1,0 @@
-#!/bin/bash
-
-/usr/bin/python3 /home/pi/Downloads/PiCamera-GUI/picamera-gui/main.py

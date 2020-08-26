@@ -11,6 +11,6 @@ class TkinterError(Exception):
         
 
 # Exception de la PiCamera
-class PiCameraError(Exception):
+class EKameraError(Exception):
     def __init__(self, mismatch):
         Exception.__init__(self, mismatch)

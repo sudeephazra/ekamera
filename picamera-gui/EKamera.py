@@ -28,9 +28,9 @@ VIDEO_DIR = '/home/pi/Videos/'
 IMAGE_DIR = '/etc/eklavya/ekamera/images/'
 
 
-class PiCameraGUI(Frame):
+class EKamera(Frame):
     """
-    Classe pour l'interface graphique de la ``PiCamera``
+    Classe pour l'interface graphique de la ``EKamera``
 
     **Fonctionnalités**
 
@@ -945,7 +945,7 @@ class PiCameraGUI(Frame):
             self.camera.resolution = self.resolution
         except:
             messagebox.showinfo("Error", "The resolution is too high\nChoose a resolution lower than 2592x1944")
-            raise PiCameraError("The resolution is too high")
+            raise EKameraError("The resolution is too high")
 
         # Ouvre une boîte de dialogue et soulève une exception si la résolution est supérieure à 2592x1944
         # 2592x1944 est la résolution maximale de la caméra sans problème de mémoire
