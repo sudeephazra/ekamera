@@ -1146,7 +1146,7 @@ class EKamera(Frame):
 
 	"""
         self.update_idletasks()
-        # Calcule la position du coin supérieur gauche
+        # Calculate the position of the upper left corner
         wf, hf = self.previewFrame.winfo_width(), self.previewFrame.winfo_height()
         w, h = RESOLUTION_PREVIEW
         x, y = (wf/2) - (w/2), (hf/2) - (h/2)
