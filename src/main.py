@@ -11,14 +11,6 @@ from picamera import PiCamera
 # Exécute le programme
 def run():
     try:
-        win = Tk()
-    except:
-        messagebox.showerror("Tkinter error", "GUI initialization error")
-        raise TkinterError("Tkinter initialization error")
-        print("Finished")
-        return 0
-    
-    try:
         camera = PiCamera()  # Mode autre que 0 pour pouvoir changer de mode plus tard
         camera.sensor_mode = 0	# Retourne au mode 0
     except:
@@ -30,11 +22,22 @@ def run():
     win.iconphoto(False, photo)
     win.resizable(width=False, height=False)
     app = EKamera(win,camera,title="EKamera")
+    win.protocol("WM_DELETE_WINDOW", callback)
     win.mainloop()
 
     camera.close()
-        
+
+def callback():
+    if messagebox.askokcancel("Quit", "Do you really wish to quit?"):
+        win.destroy()
+
 # Exécute le programme
 if __name__ == "__main__":
     print("Window initialization")
+    try:
+        win = Tk()
+    except:
+        messagebox.showerror("Tkinter error", "GUI initialization error")
+        raise TkinterError("Tkinter initialization error")
+        print("Finished")
     run()
