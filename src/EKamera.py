@@ -29,40 +29,13 @@ IMAGE_DIR = '/etc/eklavya/ekamera/images/'
 
 
 class EKamera(Frame):
-    """
-    Classe pour l'interface graphique de la ``EKamera``
 
-    **Fonctionnalités**
-
-
-    * Aperçu en temps réel
-    * Aperçu de la photo prise
-    * Prise de photo, vidéo et de photos en séquence
-    * Zoom et déplacement à l'intérieur de l'image en temps réel
-    * Ajout de texte et du temps présent sur la photo
-    * Différents formats de photo supportés
-    * Rotation et revirement horizontal et vertical de l'image
-
-
-    :param root: Fenêtre principal issue de la librairie ``tkinter``
-    :type  root: Tk() ou Toplevel()
-
-    :param camera: Objet caméra issu du module ``picamera``
-    :type  camera: PiCamera()
-
-    :param title: Titre de la fenêtre
-    :type  title: String
-
-    Voir le fichier ``main.py`` pour un exemple d'utilisation
-    """
-
-
-    # Constructeur
+    # Constructor
     def __init__(self, root, camera, title):
 
         """
-        Initialise la fenêtre, les paramètres de la caméra, les sous-fenêtres et widgets, l'aperçu,
-        la gestion des événements et les autres attributs utiles au fonctionnement de l'application
+        Initializes window, camera settings, sub-windows and widgets, preview,
+        event management and other attributes useful for the operation of the application
 
         """
 
@@ -83,19 +56,19 @@ class EKamera(Frame):
         self.video_dir = VIDEO_DIR
         self.photo_dir = CAPTURE_DIR
 
-        # Initialisation des sous-fenêtres et boutons
+        # Initializing Panels and Buttons
         self.createFrames()
         self.createLabelFrames()
         self.createWidgets()
 
-        # Initialisation de l'aperçu
+        # Initializing the preview
         self.pos_preview = self.posPreview()
         self.resPreview = RESOLUTION_PREVIEW
         self.winPreview = (self.pos_preview[0], self.pos_preview[1],
                            self.resPreview[0], self.resPreview[1])
         self.camera.start_preview(fullscreen=False, window=self.winPreview)
 
-        # Autres
+        # Other
         self.hflip = False
         self.vflip = False
         self.i = 0
@@ -105,11 +78,11 @@ class EKamera(Frame):
         self.angle = 0
         self.recording = False
 
-        # Initialisation de la gestion des événements
+        # Initialization of event management
         self.createBindings()
 
 
-    # Destructeur
+    # Destructor
     def __del__(self):
 
         """
@@ -865,17 +838,17 @@ class EKamera(Frame):
     def set_previewPos(self,event):
 
         """
-	Ajuste la position de l'aperçu à la fenêtre
+	Adjust the position of the preview to the window
 
 	"""
 
-        # Actualise les tâches passives (e.g. position des fenêtres). Utilisé pour la configuration de la géométrie de la fenêtre
+        # Updates passive tasks (e.g. position of windows). Used for window geometry configuration
         self.update_idletasks()
 
-        # Trouve la position du coin supérieur gauche de l'aperçu en temps réel
+        # Find the position of the top left corner of the preview in real time
         self.pos_preview = self.posPreview()
 
-        # Fixe la position de l'aperçu en temps réel avec un tuple de la forme (x, y, width, height)
+        # Fix the position of the preview in real time with a tuple of the form (x, y, width, height)
         self.winPreview = (self.pos_preview[0], self.pos_preview[1],
                            self.resPreview[0], self.resPreview[1])
         self.camera.preview.window = self.winPreview

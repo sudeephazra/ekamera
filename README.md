@@ -27,6 +27,16 @@ $ sudo apt-get install python3-picamera
 
 If you are having trouble updating your Raspberry Pi, see this detailed [page] (https://picamera.readthedocs.io/en/release-1.10/install3.html) of the [PiCamera] package documentation ( https://picamera.readthedocs.io/en/release-1.10/index.html).
 
+### Manually installing on Raspberry Pi OS (previously known as Raspbian)
+
+The tool is installed by default on Eklavys OS. If you want to install the tool on Raspberry Pi OS (previously known as Raspbian), pkease run the following commands
+
+```
+$ git clone https://github.com/sudeephazra/ekamera.git
+$ cd ekamera
+$ sudo ./install.sh
+```
+
 ## Authors
 
 * **Jérémy Talbot-Pâquet** - *Initial work* - [Jtpaquet] (https://github.com/jtpaquet)
