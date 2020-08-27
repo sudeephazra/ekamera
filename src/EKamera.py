@@ -238,7 +238,7 @@ class EKamera(Frame):
         self.menubar.add_cascade(label="Edit", menu=menuEditer)
         menuEditer.add_command(label="Rotate horizontal", command=self.hflip)
         menuEditer.add_command(label="Rotate vertical", command=self.vflip)
-        menuEditer.add_command(label="Rotation", command=self.rotate)
+        menuEditer.add_command(label="Rotate", command=self.rotate)
 
         # crée le menu Capture et l'attache au menu virtuel
         menuCapture = Menu(self.menubar, tearoff=0)
