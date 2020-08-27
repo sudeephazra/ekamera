@@ -15,21 +15,21 @@ This program is written in the [Python] programming language (https://www.python
 * Different photo formats supported
 * Horizontal and vertical image rotation and flip
 
-### Installing Python 3
+### Installing on Python 3
 
 The most important thing is to make sure that your system contains the picamera packages. To do this, enter the following command in the command prompt of your Raspberry Pi
 
 
-`` ``
+````
 $ sudo apt-get update
 $ sudo apt-get install python3-picamera
-`` ``
+````
 
 If you are having trouble updating your Raspberry Pi, see this detailed [page] (https://picamera.readthedocs.io/en/release-1.10/install3.html) of the [PiCamera] package documentation ( https://picamera.readthedocs.io/en/release-1.10/index.html).
 
 ## Authors
 
-* ** Jérémy Talbot-Pâquet ** - * Initial work * - [Jtpaquet] (https://github.com/jtpaquet)
+* **Jérémy Talbot-Pâquet** - *Initial work* - [Jtpaquet] (https://github.com/jtpaquet)
 
 Also see the list of [contributors] (https://github.com/jtpaquet/PiCamera-GUI/graphs/contributors) to find out who has contributed to this application.
 
